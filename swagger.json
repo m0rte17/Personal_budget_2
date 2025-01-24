@@ -1,0 +1,351 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Personal Budget API",
+      "version": "1.0.0",
+      "description": "API for managing budget envelopes and transactions."
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000",
+        "description": "Local server"
+      }
+    ],
+    "paths": {
+      "/envelopes": {
+        "get": {
+          "summary": "Get all envelopes",
+          "description": "Retrieve a list of all envelopes.",
+          "responses": {
+            "200": {
+              "description": "List of envelopes",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer", "example": 1 },
+                        "title": { "type": "string", "example": "Groceries" },
+                        "budget": { "type": "number", "example": 500.0 }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        },
+        "post": {
+        "summary": "Create a new envelope",
+        "description": "Create a new envelope with a specified title and budget.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string", "example": "Groceries" },
+                  "budget": { "type": "number", "example": 500.0 }
+                },
+                "required": ["title", "budget"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Envelope successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "title": { "type": "string", "example": "Groceries" },
+                    "budget": { "type": "number", "example": 500.0 }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/envelopes/{id}": {
+      "get": {
+        "summary": "Get an envelope by ID",
+        "description": "Retrieve the details of an envelope by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Envelope details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "title": { "type": "string", "example": "Groceries" },
+                    "budget": { "type": "number", "example": 500.0 }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Envelope not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an envelope",
+        "description": "Update the title or budget of a specified envelope.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string", "example": "Updated Title" },
+                  "budget": { "type": "number", "example": 600.0 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Envelope updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "title": { "type": "string", "example": "Updated Title" },
+                    "budget": { "type": "number", "example": 600.0 }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Envelope not found"
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an envelope",
+        "description": "Delete a specified envelope by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Envelope successfully deleted"
+          },
+          "404": {
+            "description": "Envelope not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "get": {
+        "summary": "Get all transactions",
+        "description": "Retrieve a list of all transactions.",
+        "responses": {
+          "200": {
+            "description": "List of transactions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer", "example": 1 },
+                      "amount": { "type": "number", "example": -50.0 },
+                      "description": { "type": "string", "example": "Grocery Store" },
+                      "envelope_id": { "type": "integer", "example": 1 },
+                      "date": { "type": "string", "example": "2023-01-24" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a transaction",
+        "description": "Create a new transaction and update the associated envelope budget.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number", "example": -50.0 },
+                  "description": { "type": "string", "example": "Grocery Store" },
+                  "envelope_id": { "type": "integer", "example": 1 }
+                },
+                "required": ["amount", "description", "envelope_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transaction successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "amount": { "type": "number", "example": -50.0 },
+                    "description": { "type": "string", "example": "Grocery Store" },
+                    "envelope_id": { "type": "integer", "example": 1 },
+                    "date": { "type": "string", "example": "2023-01-24" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },"/transactions/{id}": {
+      "get": {
+        "summary": "Get a transaction by ID",
+        "description": "Retrieve details of a specific transaction by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "amount": { "type": "number", "example": -50.0 },
+                    "description": { "type": "string", "example": "Grocery Store" },
+                    "envelope_id": { "type": "integer", "example": 1 },
+                    "date": { "type": "string", "example": "2023-01-24" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a transaction",
+        "description": "Delete a specific transaction by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction successfully deleted"
+          },
+          "404": {
+            "description": "Transaction not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  }
+}
