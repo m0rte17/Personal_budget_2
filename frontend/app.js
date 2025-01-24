@@ -1,5 +1,5 @@
 async function fetchEnvelopes() {
-    const response = await fetch('http://localhost:3000/envelopes');
+    const response = await fetch('https://personal-budget-2-8k83.onrender.com/envelopes');
     if (!response.ok) {
         console.error('Error in receiving envelopes:', response.statusText);
         return;
