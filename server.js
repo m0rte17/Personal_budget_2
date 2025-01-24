@@ -49,43 +49,62 @@ app.get('/envelopes', async (req, res) => {
 
 
 // GET endpoint to retrieve envelope by ID 
-app.get('/envelopes/:id', (req, res) => {
+app.get('/envelopes/:id', async (req, res) => {
     const envelopeId = parseInt(req.params.id); // Parsing ID from URL parameter
-    const envelope = envelopes.find(env => env.id === envelopeId);
+    
+    try {
+        // SQL query for searching envelope by ID
+        const result = await db.query('SELECT * FROM envelopes WHERE id = $1', [envelopeId]);
 
-    // If no envelope is found, return 404
-    if (!envelope) {
-        return res.status(404).send(`Envelope ID ${envelopeId} not found.`);
+        // Check if the envelope exist
+        if (result.rows.length === 0) {
+            return res.status(400).send('Envelope ID ${envelopeId} not found.');
+        }
+
+        // Return found envelope
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error retrieving envelope:', err);
+        res.status(500).send('An error occurred while retrieving the envelope.');
     }
-
-    // Returning the envelope we found
-    res.status(200).json(envelope);
 });
 
 // PUT endpoint to update the envelope
-app.put('/envelopes/:id', (req, res) => {
+app.put('/envelopes/:id', async (req, res) => {
     const envelopeId = parseInt(req.params.id);
     const { budget, title } = req.body;
 
-    const envelope = envelopes.find(env => env.id === envelopeId);
+    try {
+        // Check envelope exist
+        const checkResult = await db.query('SELECT * FROM envelopes WHERE id = $1', [envelopeId]);
+        if (checkResult.rows.length === 0) {
+            return res.status(404).send(`Envelope ID ${envelopeId} not found.`);
 
-    if (!envelope) {
-        return res.status(404).send(`Envelope ID ${envelopeId} not found.`);
-    }
-
-    // Data validation
-    if (budget !== undefined) {
-        if (typeof budget !== 'number' || budget < 0) {
-            return res.status(400).send('The budget should be a positive number.');
         }
-        envelope.budget = budget; // Budget Update
-    }
 
-    if (title) {
-        envelope.title = title; // Updating the envelope name
-    }
+        // Data validation
+        if (budget !== undefined) {
+            if (typeof budget !== 'number' || budget < 0) {
+                return res.status(400).send('The budget should be a positive number.');
+            }
+        }
 
-    res.status(200).send(`Envelope ID ${envelopeId} updated: ${JSON.stringify(envelope)}`);
+        // Updating data in the database
+        const updateQuery = `
+            UPDATE envelopes
+            SET title = COALESCE($1, title), budget = COALESCE($2, budget)
+            WHERE id = $3
+            RETURNING *;
+        `;
+        const updateResult = await db.query(updateQuery, [title, budget, envelopeId]);
+
+         // Return updated envelope
+         res.status(200).json(updateResult.rows[0]);
+        } catch (err) {
+            console.error('Error updating envelope:', err);
+            res.status(500).send('An error occurred while updating the envelope.');
+        }
+    
 });
 
 // POST endpoint to subtract the amount from the envelope budget
