@@ -37,15 +37,16 @@ app.post('/envelopes', async (req, res) => {
 });
 
 // GET endpoint to retrieve all envelopes
-app.get('/envelopes', (req, res) => {
-    // Checking to see if there are envelopes
-    if (envelopes.length === 0) {
-        return res.status(404).send('There are no envelopes created.');
-    }
-
-    // Return all envelopes
-    res.status(200).json(envelopes);
+app.get('/envelopes', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM envelopes');
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error retrieving envelopes.');
+  }
 });
+
 
 // GET endpoint to retrieve envelope by ID 
 app.get('/envelopes/:id', (req, res) => {
