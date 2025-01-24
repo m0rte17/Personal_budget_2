@@ -5,6 +5,14 @@ const app = express();
 const port = 3000; 
 const db = require('./db');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json'); // Connected created file
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+console.log('Swagger docs available at http://localhost:3000/api-docs');
+
+
 // Use CORS for all routes
 app.use(cors());
 
@@ -316,7 +324,7 @@ app.put('/transactions/:id', async (req, res) => {
              SET amount = COALESCE($1, amount), 
                  description = COALESCE($2, description)
              WHERE id = $3 RETURNING *`,
-            [amount, recipient, description, transactionId]
+            [amount, description, transactionId]
         );
 
         res.status(200).json(result.rows[0]);
