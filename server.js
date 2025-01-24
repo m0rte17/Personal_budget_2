@@ -278,6 +278,38 @@ app.get('/envelopes/:id/transactions', async (req, res) => {
     }
 });
 
+// Endpoint to update the transaction
+app.put('/transactions/:id', async (req, res) => {
+    const transactionId = parseInt(req.params.id);
+    const { amount, recipient, description } = req.body;
+
+    try {
+        // Check if the transaction exists
+        const transactionCheck = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionId]);
+        if (transactionCheck.rows.length === 0) {
+            return res.status(404).send(`Transaction ID ${transactionId} not found.`);
+        }
+
+        const transaction = transactionCheck.rows[0];
+
+        // Update transaction
+        const result = await db.query(
+            `UPDATE transactions 
+             SET amount = COALESCE($1, amount), 
+                 recipient = COALESCE($2, recipient), 
+                 description = COALESCE($3, description)
+             WHERE id = $4 RETURNING *`,
+            [amount, recipient, description, transactionId]
+        );
+
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error updating transaction:', err);
+        res.status(500).send('An error occurred while updating the transaction.');
+    }
+});
+
+
 // Server startup
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
