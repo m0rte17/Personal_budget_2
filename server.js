@@ -215,6 +215,39 @@ app.post('/envelopes/transfer/:from/:to', async (req, res) => {
     }
 });
 
+app.post('/transactions', async (req, res) => {
+    const { envelopeId, amount, recipient } = req.body;
+
+    try {
+        // Checking the existence of the envelope
+        const envelopeCheck = await db.query('SELECT * FROM envelopes WHERE id = $1', [envelopeId]);
+        if (envelopeCheck.rows.length === 0) {
+            return res.status(404).send(`Envelope ID ${envelopeId} not found.`);
+        }
+
+        const envelope = envelopeCheck.rows[0];
+
+        // Budget check on an expense transaction
+        if (amount < 0 && envelope.budget + amount < 0) {
+            return res.status(400).send('Insufficient funds in the envelope.');
+        }
+
+        // Add transaction to the table 
+        const result = await db.query(
+            `INSERT INTO transactions (amount, recipient, envelope_id) VALUES ($1, $2, $3) RETURNING *`,
+            [amount, recipient, envelopeId]
+        );
+
+        // Update envelope budget
+        await db.query('UPDATE envelopes SET budget = budget + $1 WHERE id = $2', [amount, envelopeId]);
+
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error creating transaction:', err);
+        res.status(500).send('An error occurred while creating the transaction.');
+    }
+});
+
 // Server startup
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
