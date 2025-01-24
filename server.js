@@ -215,6 +215,7 @@ app.post('/envelopes/transfer/:from/:to', async (req, res) => {
     }
 });
 
+// Endpoint to add a new transaction
 app.post('/transactions', async (req, res) => {
     const { envelopeId, amount, recipient } = req.body;
 
@@ -248,6 +249,7 @@ app.post('/transactions', async (req, res) => {
     }
 });
 
+// Endpoint to get a list of all transactions
 app.get('/transactions', async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM transactions');
@@ -258,6 +260,7 @@ app.get('/transactions', async (req, res) => {
     }
 });
 
+// Endpoint to retrieve transactions by envelope_id
 app.get('/envelopes/:id/transactions', async (req, res) => {
     const envelopeId = parseInt(req.params.id);
 
