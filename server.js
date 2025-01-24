@@ -165,36 +165,54 @@ app.delete('/envelopes/:id', async (req, res) => {
 });
 
 // POST endpoint for budget transfer between envelopes
-app.post('/envelopes/transfer/:from/:to', (req, res) => {
+app.post('/envelopes/transfer/:from/:to', async (req, res) => {
     const fromId = parseInt(req.params.from); // ID of the envelope from which we are transferring
     const toId = parseInt(req.params.to);     // ID of the envelope we're transferring
     const { amount } = req.body;               // Transfer amount from the request body
 
-    // Finding both envelopes
-    const fromEnvelope = envelopes.find(env => env.id === fromId);
-    const toEnvelope = envelopes.find(env => env.id === toId);
+    try {
+        const fromEnvelopeResult = await db.query('SELECT * FROM envelopes WHERE id = $1', [fromId]);
+        const toEnvelopeResult = await db.query('SELECT * FROM envelopes WHERE id = $1', [toId]);
+        
+        if (fromEnvelopeResult.rows.length === 0) {
+            return res.status(404).send(`Envelope ID ${fromId} not found.`);
+        }
+        if (toEnvelopeResult.rows.length === 0) {
+            return res.status(404).send(`Envelope ID ${toId} not found.`);
+        }
 
-    // Checking to see if both envelopes are found
-    if (!fromEnvelope) {
-        return res.status(404).send(`Envelope ID ${fromId} not found.`);
-    }
-    if (!toEnvelope) {
-        return res.status(404).send(`Envelope ID ${toId} not found.`);
-    }
+        const fromEnvelope = fromEnvelopeResult.rows[0];
+        const toEnvelope = toEnvelopeResult.rows[0];
 
-    // Amount validation
-    if (typeof amount !== 'number' || amount <= 0) {
-        return res.status(400).send('The amount to be transferred must be a positive number.');
-    }
-    if (fromEnvelope.budget < amount) {
-        return res.status(400).send('Insufficient funds on the envelope for the transfer.');
-    }
+        // Checking the validity of the sum
+        if (typeof amount !== 'number' || amount <= 0) {
+            return res.status(400).send('The amount to be transferred must be a positive number.');
+        }
 
-    // Transferring funds
-    fromEnvelope.budget -= amount; // Subtract the amount from the first envelope
-    toEnvelope.budget += amount;    // Add the amount to the second envelope
+        // Check if there are enough funds on the “from” envelope
+        if (fromEnvelope.budget < amount) {
+            return res.status(400).send('Insufficient funds on the envelope for the transfer.');
+        }
 
-    res.status(200).send(`The amount ${amount}  was successfully transferred from the envelope '${fromEnvelope.title}' to the envelope '${toEnvelope.title}'.`);
+        // Execute the transfer within the transaction
+        await db.query('BEGIN');
+
+        // Write off the amount from the “from” envelope
+        await db.query('UPDATE envelopes SET budget = budget - $1 WHERE id = $2', [amount, fromId]);
+
+        // Add the amount to the “to” envelope
+        await db.query('UPDATE envelopes SET budget = budget + $1 WHERE id = $2', [amount, toId]);
+
+        await db.query('COMMIT');
+
+        res.status(200).send(
+            `The amount ${amount} was successfully transferred from the envelope '${fromEnvelope.title}' to the envelope '${toEnvelope.title}'.`
+        );
+    } catch (err) {
+        await db.query('ROLLBACK'); // Cancel transaction in case of error
+        console.error('Error transferring funds:', err);
+        res.status(500).send('An error occurred while transferring funds.');
+    }
 });
 
 // Server startup
