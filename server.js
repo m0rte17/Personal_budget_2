@@ -260,6 +260,24 @@ app.get('/transactions', async (req, res) => {
     }
 });
 
+//  Endpoint to retrieve transaction by ID 
+app.get('/transactions/:id', async (req, res) => {
+    const transactionId = parseInt(req.params.id);
+
+    try {
+        const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).send(`Transaction ID ${transactionId} not found.`);
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error retrieving transaction:', err);
+        res.status(500).send('An error occurred while retrieving the transaction.');
+    }
+});
+
 // Endpoint to retrieve transactions by envelope_id
 app.get('/envelopes/:id/transactions', async (req, res) => {
     const envelopeId = parseInt(req.params.id);
