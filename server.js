@@ -248,6 +248,16 @@ app.post('/transactions', async (req, res) => {
     }
 });
 
+app.get('/transactions', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM transactions');
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error('Error retrieving transactions:', err);
+        res.status(500).send('An error occurred while retrieving transactions.');
+    }
+});
+
 // Server startup
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
