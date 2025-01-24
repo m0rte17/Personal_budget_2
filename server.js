@@ -4,6 +4,7 @@ const cors = require('cors'); // Connect CORS
 const app = express();
 const port = 3000; 
 const db = require('./db');
+const path = require('path');
 
 // Specify the directory where index.html and other static files are located
 app.use(express.static(path.join(__dirname, 'frontend')));
