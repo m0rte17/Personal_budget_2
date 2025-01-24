@@ -147,18 +147,20 @@ app.post('/envelopes/:id/withdraw', async (req, res) => {
 });
 
 // DELETE endpoint for deleting an envelope by ID
-app.delete('/envelopes/:id', (req, res) => {
-    const envelopeId = parseInt(req.params.id);
-    const originalLength = envelopes.length;
+app.delete('/envelopes/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    
+    try {
+        const result = await db.query('DELETE FROM envelopes WHERE id = $1 RETURNING *', [id]);
 
-    // Filter the array to remove the envelope with the specified ID
-    envelopes = envelopes.filter(env => env.id !== envelopeId);
+        if (result.rows.length === 0) {
+            return res.status(404).send(`Envelope ID ${id} not found.`);
+        }
 
-    // If the length of the array has changed, then the envelope has been found and removed
-    if (envelopes.length < originalLength) {
-        res.status(200).send(`Envelope ID ${envelopeId} successfully deleted.`);
-    } else {
-        res.status(404).send(`Envelope ID ${envelopeId} not found.`);
+        res.status(200).send(`Envelope ID ${id} successfully deleted.`);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error deleting envelope.');
     }
 });
 
