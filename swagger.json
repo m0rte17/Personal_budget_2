@@ -7,7 +7,7 @@
     },
     "servers": [
       {
-        "url": "http://localhost:3000",
+        "url": "https://personal-budget-2-8k83.onrender.com",
         "description": "Local server"
       }
     ],
