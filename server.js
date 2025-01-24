@@ -217,7 +217,7 @@ app.post('/envelopes/transfer/:from/:to', async (req, res) => {
 
 // Endpoint to add a new transaction
 app.post('/transactions', async (req, res) => {
-    const { envelopeId, amount, recipient } = req.body;
+    const { envelopeId, amount, description } = req.body;
 
     try {
         // Checking the existence of the envelope
@@ -235,8 +235,8 @@ app.post('/transactions', async (req, res) => {
 
         // Add transaction to the table 
         const result = await db.query(
-            `INSERT INTO transactions (amount, recipient, envelope_id) VALUES ($1, $2, $3) RETURNING *`,
-            [amount, recipient, envelopeId]
+            `INSERT INTO transactions (amount, description, envelope_id) VALUES ($1, $2, $3) RETURNING *`,
+            [amount, description, envelopeId]
         );
 
         // Update envelope budget
