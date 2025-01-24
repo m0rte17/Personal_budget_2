@@ -1,0 +1,13 @@
+# Исключение папки с модулями Node.js
+node_modules/
+
+# Конфиденциальные файлы
+.env
+
+# Логи
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Системные файлы macOS
+.DS_Store
