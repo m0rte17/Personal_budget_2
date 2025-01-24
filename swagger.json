@@ -8,7 +8,7 @@
     "servers": [
       {
         "url": "https://personal-budget-2-8k83.onrender.com",
-        "description": "Local server"
+        "description": "Production server"
       }
     ],
     "paths": {
