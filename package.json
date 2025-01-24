@@ -1,0 +1,20 @@
+{
+  "name": "personal_budget_2-master",
+  "version": "1.0.0",
+  "description": "## Description This is an API for budget management using the envelope method. It allows you to create, update, delete and view budget envelopes.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
