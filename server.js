@@ -5,6 +5,14 @@ const app = express();
 const port = 3000; 
 const db = require('./db');
 
+// Specify the directory where index.html and other static files are located
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// Processing the main route for index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json'); // Connected created file
 
