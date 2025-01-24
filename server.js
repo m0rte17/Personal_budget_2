@@ -108,29 +108,42 @@ app.put('/envelopes/:id', async (req, res) => {
 });
 
 // POST endpoint to subtract the amount from the envelope budget
-app.post('/envelopes/:id/withdraw', (req, res) => {
+app.post('/envelopes/:id/withdraw', async (req, res) => {
     const envelopeId = parseInt(req.params.id);
     const { amount } = req.body;
 
-    const envelope = envelopes.find(env => env.id === envelopeId);
+    try {
+        // Check envelope exist
+        const result = await db.query('SELECT * FROM envelopes WHERE id = $1', [envelopeId]);
 
-    if (!envelope) {
-        return res.status(404).send(`Envelope ID ${envelopeId} not found.`);
+        if (result.rows.length === 0) {
+            return res.status(404).send(`Envelope ID ${envelopeId} not found.`);
+        }
+
+        const envelope = result.rows[0];
+
+        if (typeof amount !== 'number' || amount <= 0) {
+            return res.status(400).send('The sum for subtraction must be a positive number.');
+        }
+
+        if (envelope.budget < amount) {
+            return res.status(400).send('Insufficient funds on the envelope.');
+        }
+
+        // Update budget in db 
+        const newBudget = envelope.budget - amount;
+        const updateResult = await db.query(
+            'UPDATE envelopes SET budget = $1 WHERE id = $2 RETURNING *',
+            [newBudget, envelopeId]
+        );
+
+        res.status(200).send(
+            `The amount ${amount} has been successfully deducted from the envelope '${envelope.title}'. Current budget: ${updateResult.rows[0].budget}.`
+        );
+    } catch (err) {
+        console.error('Error processing withdrawal:', err);
+        res.status(500).send('An error occurred while processing the withdrawal.');
     }
-
-    // Data validation
-    if (typeof amount !== 'number' || amount <= 0) {
-        return res.status(400).send('The sum for subtraction must be a positive number.');
-    }
-
-    // Checking whether the budget is sufficient for subtraction
-    if (envelope.budget < amount) {
-        return res.status(400).send('Insufficient funds on the envelope.');
-    }
-
-    envelope.budget -= amount; // Deducting an amount from the budget
-
-    res.status(200).send(`The amount ${amount} has been successfully deducted from the envelope '${envelope.title}'. Current budget: ${envelope.budget}.`);
 });
 
 // DELETE endpoint for deleting an envelope by ID
