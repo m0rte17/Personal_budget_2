@@ -5,10 +5,10 @@ This is an API for budget management using the envelope method. It allows you to
 
 ## Installation
 1. Clone the repository:
-git clone https://github.com/your_username/Personal_Budget.git
+git clone https://github.com/your_username/Personal_Budget_2.git
 
 2. Navigate to the project folder:
-cd Personal_Budget
+cd Personal_Budget_2
 
 3. Establish dependencies:
 npm install
@@ -27,8 +27,11 @@ The API provides the following routes:
 
 ## Example request
 Use Postman or any other API testing tool:
-GET http://localhost:3000/envelopes
+GET https://personal-budget-2-8k83.onrender.com/envelopes
 
+## API Documentation
+The API documentation is available at the following link:
+[API Documentation](https://personal-budget-2-8k83.onrender.com/api-docs/)
 
 ## License
 MIT
