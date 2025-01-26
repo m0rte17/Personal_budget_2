@@ -75,6 +75,7 @@ The application is deployed and available at:
 5. **Create a `.env` file in the root directory and set it up:**
    ```env
    DATABASE_URL=postgres://username:password@localhost:5432/personal_budget_2
+*Replace username, password, and localhost with your PostgreSQL credentials.*
 
 6. **Run the application:**
    ```bash
