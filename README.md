@@ -45,11 +45,15 @@ The application is deployed and available at:
    ```bash
    npm install
 
-3. **Run the application:**
+3. **Set up your `.env` file: Add your database connection string and other environment variables:**
+   ```bash
+   DATABASE_URL=your_database_url
+
+4. **Run the application:**
    ```bash
    node server.js
 
-4. **Access the application locally:**  
+5. **Access the application locally:**  
    API: [http://localhost:3000](http://localhost:3000)  
    Swagger Docs: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
