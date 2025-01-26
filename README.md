@@ -17,6 +17,7 @@
 The application is deployed and available at:
 - **API Base URL**: [Go to the site](https://personal-budget-2-8k83.onrender.com/)
 - **API Documentation**: [Go to API docs](https://personal-budget-2-8k83.onrender.com/api-docs/)
+*Due to the fact that the project is deployed on a free server, it is not always available, the free plan uses the auto-sleep function. Try refreshing the page after 15-30 seconds.*
 
 ---
 
