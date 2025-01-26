@@ -70,8 +70,8 @@ Transactions:
 - `DELETE /transactions/:id` — Delete a transaction by ID.
 
 ## Example request
-Use Postman or any other API testing tool.
-Example to get all envelopes:
+Use Postman or any other API testing tool.  
+Example to get all envelopes:  
 GET http://localhost:3000/envelopes
 
 ## License
