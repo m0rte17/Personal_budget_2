@@ -49,15 +49,36 @@ The application is deployed and available at:
    ```bash
    npm install
 
-4. **Set up your `.env` file: Add your database connection string and other environment variables:**
-   ```bash
-   DATABASE_URL=your_database_url
+4. **Create Database:**
+   To set up the database, run the following SQL commands:
+   ```sql
+   CREATE TABLE Envelopes (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(100) NOT NULL,
+      budget DECIMAL(10,2) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
 
-5. **Run the application:**
+   CREATE TABLE Transactions (
+      id SERIAL PRIMARY KEY,
+      amount DECIMAL(10,2) NOT NULL,
+      description TEXT,
+      envelope_id INT NOT NULL,
+      date DATE NOT NULL DEFAULT CURRENT_DATE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+5. **Create a `.env` file in the root directory and set it up:**
+   ```env
+   DATABASE_URL=postgres://username:password@localhost:5432/personal_budget_2
+
+6. **Run the application:**
    ```bash
    node server.js
 
-6. **Access the application locally:**  
+7. **Access the application locally:**  
    API: [http://localhost:3000](http://localhost:3000)  
    Swagger Docs: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
