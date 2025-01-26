@@ -52,6 +52,8 @@ The application is deployed and available at:
 4. **Create Database:**
    To set up the database, run the following SQL commands:
    ```sql
+   CREATE DATABASE personal_budget_2;
+   
    CREATE TABLE Envelopes (
       id SERIAL PRIMARY KEY,
       title VARCHAR(100) NOT NULL,
