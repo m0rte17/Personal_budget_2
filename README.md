@@ -50,8 +50,8 @@ The application is deployed and available at:
    node server.js
 
 4. **Access the application locally:**
-   API: [http://localhost:3000](http://localhost:3000)
-   Swagger Docs: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+   - API: [http://localhost:3000](http://localhost:3000)
+   - Swagger Docs: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
 ## Usage
 The API provides the following routes:
